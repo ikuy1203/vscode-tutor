@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		// 教材の編集時、保存のたびに整形されて練習用テキストが崩れないようにする
+		"[plaintext]": {
+			"editor.formatOnSave": false,
+			"files.trimTrailingWhitespace": false
+		},
+		"[javascript]": {
+			"editor.formatOnSave": false
+		},
+		"editor.unicodeHighlight.ambiguousCharacters": false,
+		// 作業用コピーを検索結果に出さない
+		"search.exclude": {
+			"work": true
+		}
+	}
+}
