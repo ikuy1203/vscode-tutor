@@ -1,0 +1,28 @@
+{
+  // チュートリアル用の設定です。bin/vscode-tutor が work/ にコピーして使います。
+
+  // 練習中の編集が勝手に保存・整形されないようにする
+  "files.autoSave": "off",
+  "editor.formatOnSave": false,
+  "editor.formatOnPaste": false,
+  "editor.formatOnType": false,
+
+  // 折り返すと ⌘ + ← / → が「表示上の行」単位になってしまうため無効化
+  "editor.wordWrap": "off",
+
+  // 練習の邪魔になる表示・補完を抑える
+  "editor.minimap.enabled": false,
+  "editor.inlineSuggest.enabled": false,
+  "editor.unicodeHighlight.ambiguousCharacters": false,
+  "editor.unicodeHighlight.invisibleCharacters": false,
+  "files.exclude": {
+    ".vscode": true
+  },
+
+  // ⌥ + ⇧ + F で「どのフォーマッタを使うか」を聞かれないようにする
+  "[javascript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features",
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  }
+}

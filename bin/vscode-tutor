@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+#
+# vscode-tutor: VS Code ショートカット練習用の作業コピーを作り、VS Code で開く
+#
+# 教材 (tutor/) を作業フォルダ (work/) にコピーしてから開くため、
+# 練習でどれだけ編集しても教材本体は汚れません。実行のたびに work/ はリセットされます。
+
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+使い方: vscode-tutor [オプション]
+
+教材 (tutor/) をまっさらな作業フォルダ (work/) にコピーし、VS Code で開きます。
+実行するたびに作業フォルダはリセットされます。
+
+オプション:
+  --clean     拡張機能や独自のキー割り当ての影響を受けない専用プロファイル
+              ("vscode-tutor") で開きます。Vim 拡張などを入れている場合に便利です。
+  -h, --help  このヘルプを表示します。
+
+環境変数:
+  VSCODE_BIN  使用する VS Code の CLI を指定します（例: code-insiders）。
+EOF
+}
+
+# シンボリックリンク経由（例: ~/bin/vscode-tutor）で呼ばれても本体の場所を解決する
+script_dir() {
+  local src="${BASH_SOURCE[0]}" dir
+  while [ -L "$src" ]; do
+    dir="$(cd -P "$(dirname "$src")" && pwd)"
+    src="$(readlink "$src")"
+    [[ "$src" == /* ]] || src="$dir/$src"
+  done
+  cd -P "$(dirname "$src")" && pwd
+}
+
+# VS Code の CLI を探す。PATH に code が無くても、アプリ同梱の CLI を使う
+find_code() {
+  if [ -n "${VSCODE_BIN:-}" ]; then
+    command -v "$VSCODE_BIN" && return 0
+    echo "VSCODE_BIN に指定されたコマンドが見つかりません: $VSCODE_BIN" >&2
+    return 1
+  fi
+  command -v code && return 0
+  local app bin
+  for app in "/Applications/Visual Studio Code.app" "$HOME/Applications/Visual Studio Code.app"; do
+    bin="$app/Contents/Resources/app/bin/code"
+    if [ -x "$bin" ]; then
+      echo "$bin"
+      return 0
+    fi
+  done
+  return 1
+}
+
+clean=0
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --clean) clean=1 ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "不明なオプションです: $1" >&2
+      usage >&2
+      exit 1
+      ;;
+  esac
+  shift
+done
+
+root="$(cd "$(script_dir)/.." && pwd)"
+src="$root/tutor"
+work="$root/work"
+
+if [ ! -f "$src/tutor.txt" ]; then
+  echo "教材が見つかりません: $src/tutor.txt" >&2
+  exit 1
+fi
+
+if ! code_bin="$(find_code)"; then
+  cat >&2 <<'EOF'
+VS Code の code コマンドが見つかりません。
+VS Code でコマンドパレット (⌘ + ⇧ + P) を開き、
+「Shell Command: Install 'code' command in PATH」を実行してから再度お試しください。
+EOF
+  exit 1
+fi
+
+# 作業フォルダをまっさらな状態に作り直す
+rm -rf "$work"
+cp -R "$src" "$work"
+
+args=(--new-window "$work" "$work/tutor.txt")
+if [ "$clean" -eq 1 ]; then
+  args=(--profile vscode-tutor "${args[@]}")
+fi
+
+"$code_bin" "${args[@]}"
+
+echo "VS Code Tutor を開きました: $work/tutor.txt"
+echo "（前回のチュートリアルのウィンドウが残っている場合は、閉じてから使ってください）"
