@@ -28,13 +28,20 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
-      - name: Smoke test (bash on PATH)
-        run: |
-          bash -c 'echo "bash $BASH_VERSION ($BASH)"'
-          test/smoke.sh
-      # 利用者の多くは macOS 標準の bash 3.2 で実行するため、そちらでも確認する
+      # 利用者の多くは macOS 標準の bash 3.2 で実行する
       - name: Smoke test (macOS system bash 3.2)
         run: |
           export PATH="/bin:/usr/bin:$PATH"
           bash -c 'echo "bash $BASH_VERSION ($BASH)"; [ "${BASH_VERSINFO[0]}" -eq 3 ]'
+          test/smoke.sh
+      # Homebrew の bash を PATH の先頭に置いている人向け（ランナーには入っていないので入れる）
+      - name: Smoke test (Homebrew bash 5)
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+          HOMEBREW_NO_INSTALL_CLEANUP: "1"
+        run: |
+          brew install bash
+          brew_prefix="$(brew --prefix)"
+          export PATH="$brew_prefix/bin:$PATH"
+          bash -c 'echo "bash $BASH_VERSION ($BASH)"; [ "${BASH_VERSINFO[0]}" -ge 5 ]'
           test/smoke.sh
