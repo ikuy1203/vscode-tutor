@@ -13,8 +13,11 @@
   // 練習の邪魔になる表示・補完を抑える
   "editor.minimap.enabled": false,
   "editor.inlineSuggest.enabled": false,
+  "editor.quickSuggestions": false,
+  "editor.wordBasedSuggestions": "off",
   "editor.unicodeHighlight.ambiguousCharacters": false,
   "editor.unicodeHighlight.invisibleCharacters": false,
+  "workbench.secondarySideBar.defaultVisibility": "hidden",
   "files.exclude": {
     ".vscode": true
   },
