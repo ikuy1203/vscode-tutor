@@ -1,0 +1,64 @@
+name: 教材の誤り・うまく動かない
+description: レッスンの説明と実際の動きが違う、誤字がある、起動スクリプトが動かない、などの報告
+title: "[教材] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        報告ありがとうございます！ 分かる範囲で記入してください。
+        ショートカットが効かない場合は、`./bin/vscode-tutor --clean` で起動しても同じことが起きるかも試してもらえると助かります。
+  - type: input
+    id: location
+    attributes:
+      label: 該当箇所
+      description: レッスン・練習の番号、またはファイル名
+      placeholder: "例: 練習 4.2 の手順 5 / bin/vscode-tutor"
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 起きたこと
+      description: 押したキーと、実際に起きたこと（エラーメッセージがあればそれも）
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待した動き
+  - type: input
+    id: vscode-version
+    attributes:
+      label: VS Code のバージョン
+      description: ターミナルで `code --version` を実行したときの1行目
+      placeholder: "例: 1.140.0"
+    validations:
+      required: true
+  - type: input
+    id: macos-version
+    attributes:
+      label: macOS のバージョン
+      placeholder: "例: macOS 26.7"
+  - type: dropdown
+    id: keyboard
+    attributes:
+      label: キーボード配列
+      options:
+        - JIS（日本語）
+        - US（英語）
+        - その他・わからない
+  - type: dropdown
+    id: clean
+    attributes:
+      label: "--clean を付けて起動しましたか？"
+      options:
+        - はい
+        - いいえ
+        - 両方で試した
+  - type: textarea
+    id: extensions
+    attributes:
+      label: キー操作に影響しそうな拡張機能・独自のキー割り当て
+      description: Vim 拡張や、他のエディタのキーマップなどがあれば書いてください。
+      placeholder: "例: vscodevim.vim"
