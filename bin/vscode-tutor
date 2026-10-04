@@ -17,6 +17,7 @@ usage() {
 オプション:
   --clean     拡張機能や独自のキー割り当ての影響を受けない専用プロファイル
               ("vscode-tutor") で開きます。Vim 拡張などを入れている場合に便利です。
+              （※一度使用すると、次回以降もこの作業フォルダには専用プロファイルが引き継がれます）
   -h, --help  このヘルプを表示します。
 
 環境変数:
@@ -89,6 +90,20 @@ EOF
   exit 1
 fi
 
+# Vim 拡張機能が入っているか確認し、--clean を案内する
+if [ "$clean" -eq 0 ]; then
+  if "$code_bin" --list-extensions 2>/dev/null | grep -qiE '^(vscodevim\.vim|asvetliakov\.vscode-neovim)$'; then
+    echo "ヒント: Vim などのキーバインド拡張機能が検出されました。"
+    echo "      通常のショートカットで練習したい場合は --clean を付けて起動してください。"
+  fi
+fi
+
+# 前回の work フォルダが存在する場合、未保存ウィンドウが開いたままの可能性があるため事前に注意
+if [ -d "$work" ]; then
+  echo "注意: 前回の VS Code Tutor ウィンドウが開いている場合は、閉じてから再実行してください。"
+  echo "      （開いたままだと未保存の編集が残り、まっさらな状態にリセットされません）"
+fi
+
 # 作業フォルダをまっさらな状態に作り直す
 rm -rf "$work"
 cp -R "$src" "$work"
@@ -101,4 +116,4 @@ fi
 "$code_bin" "${args[@]}"
 
 echo "VS Code Tutor を開きました: $work/tutor.txt"
-echo "（前回のチュートリアルのウィンドウが残っている場合は、閉じてから使ってください）"
+echo "（※もし前回の編集が残っている場合は、VS Code ウィンドウを一度閉じてから再実行してください）"
