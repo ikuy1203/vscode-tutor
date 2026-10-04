@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - name: Run ShellCheck
+        run: |
+          command -v shellcheck || sudo apt-get install -y shellcheck
+          shellcheck --version
+          shellcheck bin/vscode-tutor test/smoke.sh
+
+  smoke:
+    name: Smoke test (macOS)
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - name: Smoke test (bash on PATH)
+        run: |
+          bash -c 'echo "bash $BASH_VERSION ($BASH)"'
+          test/smoke.sh
+      # 利用者の多くは macOS 標準の bash 3.2 で実行するため、そちらでも確認する
+      - name: Smoke test (macOS system bash 3.2)
+        run: |
+          export PATH="/bin:/usr/bin:$PATH"
+          bash -c 'echo "bash $BASH_VERSION ($BASH)"; [ "${BASH_VERSINFO[0]}" -eq 3 ]'
+          test/smoke.sh
