@@ -91,8 +91,9 @@ EOF
 fi
 
 # Vim 拡張機能が入っているか確認し、--clean を案内する
+# （grep -q だと途中で読み終えてしまい、pipefail 下で code 側の SIGPIPE が失敗扱いになるため、最後まで読ませる）
 if [ "$clean" -eq 0 ]; then
-  if "$code_bin" --list-extensions 2>/dev/null | grep -qiE '^(vscodevim\.vim|asvetliakov\.vscode-neovim)$'; then
+  if "$code_bin" --list-extensions 2>/dev/null | grep -iE '^(vscodevim\.vim|asvetliakov\.vscode-neovim)$' >/dev/null; then
     echo "ヒント: Vim などのキーバインド拡張機能が検出されました。"
     echo "      通常のショートカットで練習したい場合は --clean を付けて起動してください。"
   fi
